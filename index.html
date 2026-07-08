@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Font File Specimen Viewer</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --surface: #f8fafc;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --border: #334155;
+        --border-dark: #475569;
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent: #3b82f6;
+        --accent-hover: #60a5fa;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: 32px;
+      }
+    }
+
+    .app-header {
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--text);
+      padding-bottom: 16px;
+    }
+
+    .app-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    @media (min-width: 768px) {
+      .app-title {
+        font-size: 24px;
+      }
+    }
+
+    .app-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Controls Panel - Dashboard */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      border: 1px solid var(--border-dark);
+      background: var(--surface);
+      padding: 16px;
+      margin-bottom: 32px;
+    }
+
+    @media (min-width: 860px) {
+      .dashboard {
+        grid-template-columns: 280px 1fr;
+      }
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .file-dropzone {
+      position: relative;
+      border: 1px dashed var(--border-dark);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+    }
+
+    .file-dropzone input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-dropzone-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .size-controller {
+      display: flex;
+      gap: 1px;
+      background: var(--border-dark);
+      border: 1px solid var(--border-dark);
+    }
+
+    .btn-step {
+      background: var(--bg);
+      border: none;
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn-step:hover {
+      background: var(--surface);
+    }
+
+    .size-input {
+      flex: 1;
+      background: var(--bg);
+      border: none;
+      color: var(--text);
+      text-align: center;
+      font-family: monospace;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .input-text {
+      width: 100%;
+      height: 100px;
+      padding: 8px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border-dark);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      resize: none;
+    }
+
+    @media (min-width: 860px) {
+      .input-text {
+        height: 113px;
+      }
+    }
+
+    .input-text:focus,
+    .size-input:focus {
+      outline: 1px solid var(--accent);
+    }
+
+    /* Font Specs Matrix Layout */
+    .specimen-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .specimen-list {
+        gap: 1px;
+        background: var(--border-dark);
+        border: 1px solid var(--border-dark);
+      }
+    }
+
+    .specimen-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      background: var(--bg);
+      border: 1px solid var(--border-dark);
+    }
+
+    @media (min-width: 768px) {
+      .specimen-row {
+        grid-template-columns: 240px 1fr;
+        border: none;
+      }
+    }
+
+    /* Sidebar Metadata Panel */
+    .specimen-meta {
+      padding: 16px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    @media (min-width: 768px) {
+      .specimen-meta {
+        border-bottom: none;
+        border-right: 1px solid var(--border);
+      }
+    }
+
+    .font-name {
+      font-size: 14px;
+      font-weight: 600;
+      word-break: break-all;
+      line-height: 1.2;
+    }
+
+    .font-tech-details {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    @media (min-width: 768px) {
+      .action-group {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+
+    .btn-action {
+      background: var(--bg);
+      border: 1px solid var(--border-dark);
+      border-radius: 4px;
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 11px;
+      font-family: monospace;
+      text-align: center;
+      cursor: pointer;
+      flex: 1;
+      text-transform: uppercase;
+    }
+
+    @media (min-width: 768px) {
+      .btn-action {
+        padding: 6px 10px;
+        text-align: left;
+        flex: none;
+        width: 100%;
+      }
+    }
+
+    .btn-action:hover {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    /* Main Preview Specimen Box */
+    .specimen-preview {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .specimen-preview {
+        padding: 20px 24px;
+      }
+    }
+
+    .preview-custom {
+      color: var(--text);
+      line-height: 1.2;
+      word-break: break-word;
+      min-height: 1.2em;
+    }
+
+    .preview-charset {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      word-break: break-all;
+      border-top: 1px dashed var(--border);
+      padding-top: 8px;
+    }
+
+    /* Toast Notification Terminal style */
+    .log-terminal {
+      font-family: monospace;
+      font-size: 11px;
+      padding: 6px 12px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      color: var(--accent);
+      opacity: 0;
+      height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border: none;
+      overflow: hidden;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .log-terminal.active {
+      opacity: 1;
+      height: auto;
+      padding: 6px 12px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="app-header">
+    <h1 class="app-title">Font Specimen Matrix</h1>
+    <p class="app-description">Upload multiple files to parse metadata and benchmark typography rendering in real-time.
+    </p>
+  </header>
+
+  <main>
+    <!-- Control Panel Dashboard -->
+    <section class="dashboard">
+      <div class="control-group">
+        <span class="control-label">1. Import Fonts</span>
+        <div class="file-dropzone">
+          <span class="file-dropzone-text">Choose OTF, TTF, WOFF2...</span>
+          <input type="file" id="fileInput" multiple accept=".woff2,.woff,.ttf,.otf">
+        </div>
+        <div class="control-group" style="margin-top: 8px;">
+          <span class="control-label">2. Base Font Size</span>
+          <div class="size-controller">
+            <button class="btn-step" id="decreaseSize" type="button">−</button>
+            <input class="size-input" id="sharedSize" type="number" value="28" min="10" max="200">
+            <button class="btn-step" id="increaseSize" type="button">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <span class="control-label">3. Live Specimen Custom String Input</span>
+        <textarea id="sharedSample" class="input-text"
+          placeholder="Type text to view rendering options...">The quick brown fox jumps over the lazy dog.</textarea>
+      </div>
+    </section>
+
+    <!-- Row-based List -->
+    <section class="specimen-list" id="fontList"></section>
+  </main>
+
+  <script>
+    const defaultText = 'The quick brown fox jumps over the lazy dog.';
+    const activeTimers = new Map();
+
+    // 全局存储机制：通过唯一的 Key (文件名 + 文件大小) 来对字体库进行去重和持续追加管理
+    const loadedFontsRegistry = new Map();
+
+    function getFontFamilyName(fileName) {
+      return fileName.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_');
+    }
+
+    function getFormat(fileName) {
+      const ext = fileName.split('.').pop()?.toLowerCase();
+      switch (ext) {
+        case 'woff2': return 'woff2';
+        case 'woff': return 'woff';
+        case 'ttf': return 'truetype';
+        case 'otf': return 'opentype';
+        default: return 'truetype';
+      }
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      return Promise.resolve();
+    }
+
+    function updateAllPreviews() {
+      const size = parseInt(document.getElementById('sharedSize').value, 10) || 28;
+      const sample = document.getElementById('sharedSample').value || defaultText;
+
+      document.querySelectorAll('.specimen-row').forEach(row => {
+        const customPreview = row.querySelector('.preview-custom');
+        if (customPreview) {
+          customPreview.style.fontSize = `${size}px`;
+          customPreview.textContent = sample;
+        }
+      });
+    }
+
+    // 核心重构逻辑：处理追加与渲染
+    function processAndRenderFonts(newFiles) {
+      let isAnyNewFontAdded = false;
+
+      Array.from(newFiles).forEach(file => {
+        // 创建文件指纹唯一 Key，防止同名但内容不同的文件冲突
+        const fontFingerprint = `${file.name}_${file.size}`;
+
+        // 已经存在该字体则直接跳过，实现防重追加
+        if (loadedFontsRegistry.has(fontFingerprint)) {
+          return;
+        }
+
+        isAnyNewFontAdded = true;
+        // 分配一个在全局 CSS 中绝对唯一的 Font-Family 别名 (使用时间戳加速增加唯一性)
+        const uniqueInternalFamily = `${getFontFamilyName(file.name)}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        const fontUrl = URL.createObjectURL(file);
+
+        // 注册到全局对象中
+        loadedFontsRegistry.set(fontFingerprint, {
+          file: file,
+          uniqueFamily: uniqueInternalFamily,
+          fontUrl: fontUrl
+        });
+
+        // 注入到 CSS 里
+        const fontFaceStyle = document.createElement('style');
+        fontFaceStyle.textContent = `
+          @font-face {
+            font-family: "${uniqueInternalFamily}";
+            src: url("${fontUrl}") format("${getFormat(file.name)}");
+            font-display: swap;
+          }
+        `;
+        document.head.appendChild(fontFaceStyle);
+
+        // 创建 DOM Row 节点并直接 Append 进列表，而不是全量刷新
+        const specimenRow = document.createElement('div');
+        specimenRow.classList.add('specimen-row');
+
+        // 左侧栏：信息与动作
+        const metaPanel = document.createElement('div');
+        metaPanel.className = 'specimen-meta';
+        metaPanel.innerHTML = `
+          <div>
+            <div class="font-name">${file.name}</div>
+            <div class="font-tech-details">${getFormat(file.name)} · ${Math.round(file.size / 1024)} KB</div>
+          </div>
+          <div class="action-group">
+            <button class="btn-action" data-type="css" type="button">Copy CSS</button>
+            <button class="btn-action" data-type="base64" type="button">Copy Base64</button>
+          </div>
+        `;
+
+        // 右侧栏：预览区
+        const previewPanel = document.createElement('div');
+        previewPanel.className = 'specimen-preview';
+
+        const customPreview = document.createElement('div');
+        customPreview.className = 'preview-custom';
+        customPreview.style.fontFamily = `"${uniqueInternalFamily}", sans-serif`;
+
+        const charsetPreview = document.createElement('div');
+        charsetPreview.className = 'preview-charset';
+        charsetPreview.style.fontFamily = `"${uniqueInternalFamily}", monospace`;
+        charsetPreview.textContent = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9';
+
+        const logTerminal = document.createElement('div');
+        logTerminal.className = 'log-terminal';
+
+        // 绑定复制事件
+        metaPanel.querySelectorAll('.btn-action').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const type = btn.dataset.type;
+            const originalCleanName = getFontFamilyName(file.name); // 导出时使用干净的、可辨识的名称
+            let finalContent = '';
+
+            if (type === 'css') {
+              finalContent = `@font-face {\n  font-family: "${originalCleanName}";\n  src: url("./${file.name}") format("${getFormat(file.name)}");\n  font-display: swap;\n}`;
+            } else {
+              const reader = new FileReader();
+              const base64Text = await new Promise((resolve, reject) => {
+                reader.onload = () => resolve(reader.result.split(',')[1] || '');
+                reader.onerror = () => reject(new Error('Read failed'));
+                reader.readAsDataURL(file);
+              });
+              finalContent = `@font-face {\n  font-family: "${originalCleanName}";\n  src: url(data:font/${getFormat(file.name)};base64,${base64Text});\n  font-display: swap;\n}`;
+            }
+
+            try {
+              await copyText(finalContent);
+              logTerminal.textContent = `> SUCCESS: ${type.toUpperCase()} copied to clipboard.`;
+              logTerminal.classList.add('active');
+
+              if (activeTimers.has(logTerminal)) {
+                clearTimeout(activeTimers.get(logTerminal));
+              }
+
+              const timer = setTimeout(() => {
+                logTerminal.classList.remove('active');
+                activeTimers.delete(logTerminal);
+              }, 2000);
+              activeTimers.set(logTerminal, timer);
+
+            } catch (err) {
+              logTerminal.textContent = `> ERROR: Clipboard write failed.`;
+              logTerminal.classList.add('active');
+            }
+          });
+        });
+
+        previewPanel.append(customPreview, charsetPreview, logTerminal);
+        specimenRow.append(metaPanel, previewPanel);
+        document.getElementById('fontList').appendChild(specimenRow);
+      });
+
+      if (isAnyNewFontAdded) {
+        updateAllPreviews();
+      }
+    }
+
+    // 交互监听
+    document.getElementById('sharedSize').addEventListener('input', updateAllPreviews);
+    document.getElementById('sharedSample').addEventListener('input', updateAllPreviews);
+    document.getElementById('decreaseSize').addEventListener('click', () => {
+      const input = document.getElementById('sharedSize');
+      input.value = Math.max(10, (parseInt(input.value, 10) || 28) - 2);
+      updateAllPreviews();
+    });
+    document.getElementById('increaseSize').addEventListener('click', () => {
+      const input = document.getElementById('sharedSize');
+      input.value = Math.min(200, (parseInt(input.value, 10) || 28) + 2);
+      updateAllPreviews();
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function (event) {
+      processAndRenderFonts(event.target.files);
+      // 清空 input 自身的值，允许用户连续选择同一个外部文件进行测试
+      this.value = '';
+    });
+  </script>
+</body>
+
+</html>
