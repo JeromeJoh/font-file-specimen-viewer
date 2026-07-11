@@ -66,12 +66,19 @@
       line-height: 1.5;
       min-height: 100%;
       overflow-x: hidden;
+      font-family: sans-serif, Courier, monospace;
     }
 
     @media (min-width: 768px) {
       body {
         padding: 28px;
       }
+    }
+
+    .flip-y {
+      display: inline-block;
+      transform: scaleX(-1);
+      text-transform: lowercase;
     }
 
     .page-shell {
@@ -164,10 +171,10 @@
       font-size: clamp(2rem, 4.2vw, 3.3rem);
       line-height: 0.95;
       letter-spacing: -0.04em;
-      font-weight: 800;
+      font-weight: 700;
       max-width: 560px;
       text-transform: capitalize;
-      font-family: sans-serif, Courier, monospace;
+      font-family: serif;
     }
 
     .hero-title .hero-word {
@@ -278,7 +285,7 @@
 
     .file-dropzone {
       position: relative;
-      border: dashed 1px gray;
+      border: dashed 0.5px gray;
       border-radius: 4px;
       display: flex;
       align-items: center;
@@ -344,11 +351,12 @@
       border: none;
       color: var(--text);
       text-align: center;
-      font-size: 16px;
+      font-size: 1.2rem;
       width: 100%;
       line-height: 1;
       -moz-appearance: textfield;
       appearance: textfield;
+      font-family: serif;
     }
 
     .size-input::-webkit-outer-spin-button,
@@ -369,14 +377,14 @@
       resize: none;
       outline: none;
       flex: 1 1 auto;
-      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.16);
+      box-shadow: inset 0 -0.5px 0 rgba(0, 0, 0, 0.16);
       transition: box-shadow var(--transition), background-color var(--transition), color var(--transition);
     }
 
     .sample-group:focus-within .input-text {
       background: var(--surface);
       color: var(--text);
-      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.16);
+      box-shadow: inset 0 -0.5px 0 rgba(0, 0, 0, 0.16);
     }
 
     .size-input:focus {
@@ -385,7 +393,8 @@
 
     .specimen-list {
       display: grid;
-      gap: var(--space-3);
+      gap: var(--space-5);
+      margin-top: 4rem;
     }
 
     .specimen-row {
@@ -394,7 +403,8 @@
       border: none;
       border-radius: 0;
       overflow: hidden;
-      box-shadow: none;
+      border-top: solid 0.5px var(--text-muted);
+      padding-top: 2rem;
     }
 
     @media (min-width: 768px) {
@@ -421,25 +431,44 @@
     }
 
     .font-name {
-      font-size: 1rem;
+      font-size: 2rem;
       font-weight: 700;
       word-break: break-all;
       line-height: 1.2;
+      white-space: nowrap;
     }
 
     .font-tech-details {
-      font-family: ui-monospace, SFMono-Regular, monospace;
+      display: flex;
       font-size: 0.8rem;
+      font-weight: thin;
       color: var(--text-muted);
       margin-top: 4px;
+      gap: 1.25rem;
+    }
+
+    .font-tech-details span {
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 1px;
     }
 
     .action-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      width: fit-content;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      border-radius: 99rem;
+      overflow: hidden;
+      border: solid 0.5px var(--text-muted);
+      opacity: 0;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .btn-action:first-child {
+      border-right: solid 0.5px var(--text-muted);
+    }
+
+    .specimen-row:hover .action-group {
+      opacity: 1;
     }
 
     .btn-action {
@@ -447,7 +476,7 @@
       border: none;
       border-radius: 0;
       color: var(--text);
-      padding: 8px 12px;
+      padding: 8px 18px;
       font-size: 0.74rem;
       font-family: inherit;
       font-weight: 700;
@@ -458,8 +487,7 @@
     }
 
     .btn-action:hover {
-      background: var(--surface);
-      color: var(--accent);
+      background: rgba(0, 0, 0, 0.02);
     }
 
     .specimen-preview {
@@ -480,7 +508,7 @@
     }
 
     .preview-charset {
-      font-size: 0.85rem;
+      font-size: 1.5rem;
       color: var(--text-muted);
       letter-spacing: 0.08em;
       word-break: break-all;
@@ -520,8 +548,8 @@
         <p class="eyebrow">Jerome Joh Presents</p>
         <h1 class="hero-title">
           <span class="hero-word">Font</span>
-          <span class="hero-word">sp<span class="accent-e">e</span>cim<span class="accent-e">e</span>n</span>
-          <span class="hero-word">vi<span class="accent-e">e</span>w<span class="accent-e">e</span>r</span>
+          <span class="hero-word">sp<span class="accent-e">e</span>cim<span class="accent-e flip-y">e</span>n</span>
+          <span class="hero-word">vi<span class="accent-e">e</span>w<span class="accent-e flip-y">e</span>r</span>
         </h1>
       </div>
     </header>
@@ -565,6 +593,7 @@
     const MIN_BASE_SIZE = 10;
     const MAX_BASE_SIZE = 200;
     const defaultText = 'The quick brown fox jumps over the lazy dog';
+    const FONT_SESSION_KEY = 'font-file-specimen-viewer:uploaded-fonts';
     const activeTimers = new Map();
     const sharedSizeInput = document.getElementById('sharedSize');
 
@@ -588,6 +617,7 @@
         case 'otf': return 'opentype';
         default: return 'truetype';
       }
+
     }
 
     function copyText(text) {
@@ -606,10 +636,70 @@
       return Promise.resolve();
     }
 
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Read failed'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function persistUploadedFonts() {
+      try {
+        const serializedEntries = [];
+
+        for (const fontEntry of loadedFontsRegistry.values()) {
+          serializedEntries.push({
+            name: fontEntry.file.name,
+            size: fontEntry.file.size,
+            type: fontEntry.file.type,
+            lastModified: fontEntry.file.lastModified,
+            dataUrl: await readFileAsDataUrl(fontEntry.file)
+          });
+        }
+
+        sessionStorage.setItem(FONT_SESSION_KEY, JSON.stringify(serializedEntries));
+      } catch (error) {
+        console.error('Failed to cache uploaded fonts:', error);
+      }
+    }
+
+    async function restoreCachedFonts() {
+      try {
+        const cachedFonts = sessionStorage.getItem(FONT_SESSION_KEY);
+        if (!cachedFonts) {
+          return;
+        }
+
+        const serializedEntries = JSON.parse(cachedFonts);
+        if (!Array.isArray(serializedEntries) || serializedEntries.length === 0) {
+          return;
+        }
+
+        const restoredFiles = [];
+
+        for (const entry of serializedEntries) {
+          const response = await fetch(entry.dataUrl);
+          const blob = await response.blob();
+          restoredFiles.push(new File([blob], entry.name, {
+            type: entry.type,
+            lastModified: entry.lastModified
+          }));
+        }
+
+        if (restoredFiles.length > 0) {
+          await processAndRenderFonts(restoredFiles);
+        }
+      } catch (error) {
+        console.error('Failed to restore cached fonts:', error);
+        sessionStorage.removeItem(FONT_SESSION_KEY);
+      }
+    }
+
     function syncBaseSizeInput() {
       const size = Math.max(MIN_BASE_SIZE, Math.min(MAX_BASE_SIZE, parseInt(sharedSizeInput.value, 10) || DEFAULT_BASE_SIZE));
       sharedSizeInput.value = String(size);
-      sharedSizeInput.style.fontSize = `${size}px`;
       return size;
     }
 
@@ -627,7 +717,7 @@
     }
 
     // 核心重构逻辑：处理追加与渲染
-    function processAndRenderFonts(newFiles) {
+    async function processAndRenderFonts(newFiles) {
       let isAnyNewFontAdded = false;
 
       Array.from(newFiles).forEach(file => {
@@ -669,16 +759,24 @@
         // 左侧栏：信息与动作
         const metaPanel = document.createElement('div');
         metaPanel.className = 'specimen-meta';
+        const displayName = getFontFamilyName(file.name);
         metaPanel.innerHTML = `
           <div>
-            <div class="font-name">${file.name}</div>
-            <div class="font-tech-details">${getFormat(file.name)} · ${Math.round(file.size / 1024)} KB</div>
+            <div class="font-name">${displayName.split('-')[0]}</div>
+            <div class="font-tech-details">
+              <span>${displayName.split('-')[1] ?? ''}</span>
+            </div>
           </div>
           <div class="action-group">
-            <button class="btn-action" data-type="css" type="button">Copy CSS</button>
-            <button class="btn-action" data-type="base64" type="button">Copy Base64</button>
+            <button class="btn-action" data-type="css" type="button">Self-hosted</button>
+            <button class="btn-action" data-type="base64" type="button">Embedded</button>
           </div>
         `;
+
+        const fontNameLabel = metaPanel.querySelector('.font-name');
+        if (fontNameLabel) {
+          fontNameLabel.style.fontFamily = `"${uniqueInternalFamily}", sans-serif`;
+        }
 
         // 右侧栏：预览区
         const previewPanel = document.createElement('div');
@@ -691,7 +789,7 @@
         const charsetPreview = document.createElement('div');
         charsetPreview.className = 'preview-charset';
         charsetPreview.style.fontFamily = `"${uniqueInternalFamily}", monospace`;
-        charsetPreview.textContent = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9';
+        charsetPreview.innerHTML = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z<br/>a b c d e f g h i j k l m n o p q r s t u v w x y z<br/>0 1 2 3 4 5 6 7 8 9';
 
         const logTerminal = document.createElement('div');
         logTerminal.className = 'log-terminal';
@@ -743,6 +841,7 @@
       });
 
       if (isAnyNewFontAdded) {
+        await persistUploadedFonts();
         updateAllPreviews();
       }
     }
@@ -759,11 +858,13 @@
       updateAllPreviews();
     });
 
-    document.getElementById('fileInput').addEventListener('change', function (event) {
-      processAndRenderFonts(event.target.files);
+    document.getElementById('fileInput').addEventListener('change', async function (event) {
+      await processAndRenderFonts(event.target.files);
       // 清空 input 自身的值，允许用户连续选择同一个外部文件进行测试
       this.value = '';
     });
+
+    restoreCachedFonts();
   </script>
 </body>
 
