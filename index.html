@@ -517,8 +517,6 @@
     }
 
     .log-terminal {
-      font-family: ui-monospace, SFMono-Regular, monospace;
-      font-size: 0.78rem;
       padding: 10px 12px;
       border-radius: 0;
       background: var(--surface);
@@ -530,6 +528,7 @@
       padding-bottom: 0;
       overflow: hidden;
       transition: all 0.2s ease-in-out;
+      font-style: italic;
     }
 
     .log-terminal.active {
@@ -802,7 +801,7 @@
             let finalContent = '';
 
             if (type === 'css') {
-              finalContent = `@font-face {\n  font-family: "${originalCleanName}";\n  src: url("./${file.name}") format("${getFormat(file.name)}");\n  font-display: swap;\n}`;
+              finalContent = `@font-face {\n  font-family: "${originalCleanName}";\n  src: url("./fonts/${file.name}") format("${getFormat(file.name)}");\n  font-display: swap;\n}`;
             } else {
               const reader = new FileReader();
               const base64Text = await new Promise((resolve, reject) => {
