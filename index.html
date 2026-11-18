@@ -230,6 +230,8 @@
       border-radius: 0;
       background: var(--surface);
       box-shadow: none;
+      /* 防止 sticky 子元素的滑动范围被父级 flex 盒子截断 */
+      overflow: visible;
     }
 
     .dashboard-row {
@@ -255,6 +257,21 @@
       flex: 1;
       max-width: 40rem;
       position: relative;
+    }
+
+    /*
+     * 将 Sample text 一行固定在视口顶部，滚动字体列表时可随时切换示例文字。
+     * sticky 只能在其父级盒子高度内吸附，这一行同时是 .dashboard 的最后一个子元素，
+     * 所以把 .sample-row 移出 .dashboard 放到 main 下作为独立区块（见 HTML），
+     * 吸附范围即整个 main 的高度，可覆盖全部字体列表。
+     */
+    .dashboard-row.sample-row {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      align-items: flex-start;
+      background: var(--bg);
+      padding: 14px 0;
     }
 
     .base-size-group .control-label {
@@ -564,24 +581,24 @@
             </div>
           </div>
         </div>
+      </section>
 
-        <div class="dashboard-row">
-          <div class="control-group sample-group">
-            <span class="control-label">Sample text</span>
-            <input id="sharedSample" class="input-text" type="text" placeholder="Type text to view rendering options..."
-              value="The quick brown fox jumps over the lazy dog">
-          </div>
+      <div class="dashboard-row sample-row">
+        <div class="control-group sample-group">
+          <span class="control-label">Sample text</span>
+          <input id="sharedSample" class="input-text" type="text" placeholder="Type text to view rendering options..."
+            value="The quick brown fox jumps over the lazy dog">
+        </div>
 
-          <div class="control-group base-size-group">
-            <span class="control-label">Base size</span>
-            <div class="size-controller">
-              <button class="btn-step" id="decreaseSize" type="button">−</button>
-              <input class="size-input" id="sharedSize" type="number">
-              <button class="btn-step" id="increaseSize" type="button">+</button>
-            </div>
+        <div class="control-group base-size-group">
+          <span class="control-label">Base size</span>
+          <div class="size-controller">
+            <button class="btn-step" id="decreaseSize" type="button">−</button>
+            <input class="size-input" id="sharedSize" type="number">
+            <button class="btn-step" id="increaseSize" type="button">+</button>
           </div>
         </div>
-      </section>
+      </div>
 
       <section class="specimen-list" id="fontList"></section>
     </main>
